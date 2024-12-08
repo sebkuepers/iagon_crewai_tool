@@ -1,8 +1,10 @@
-from crewai.tools import BaseTool
-from typing import Type
-from pydantic import BaseModel, Field
 import os
 import requests
+
+from typing import Type
+from crewai.tools import BaseTool
+from pydantic import BaseModel, Field
+
 
 # Load environment variables
 IAGON_API_KEY = os.getenv("IAGON_API_KEY")
@@ -21,26 +23,6 @@ class UploadFileInput(BaseModel):
     file_name: str = Field(default=None, description="Optional custom name for the uploaded file")
     directory_name: str = Field(default=None, description="Optional directory name to upload to")
 
-class IAGONGetDirectoryIdTool(BaseTool):
-    name: str = "Get Directory ID"
-    description: str = "Retrieves the ID of a specified directory from Iagon storage."
-    args_schema: Type[BaseModel] = GetDirectoryIdInput
-
-    def _run(self, directory_name: str, visibility: str = "private") -> str:
-        headers = {"x-api-key": IAGON_API_KEY}
-        params = {
-            "visibility": visibility,
-            "listingType": "index"
-        }
-
-        response = requests.get(f"{BASE_URL}/directory", headers=headers, params=params)
-        
-        if response.status_code == 200:
-            directories = response.json().get("data", {}).get("directories", [])
-            for directory in directories:
-                if directory.get("directory_name") == directory_name:
-                    return directory["_id"]
-        return f"Directory '{directory_name}' not found or error occurred."
 
 class IAGONUploadFileTool(BaseTool):
     name: str = "Upload File"
@@ -92,3 +74,25 @@ class IAGONUploadFileTool(BaseTool):
             
         except Exception as e:
             return f"Upload failed with error: {str(e)}"
+        
+
+class IAGONGetDirectoryIdTool(BaseTool):
+    name: str = "Get Directory ID"
+    description: str = "Retrieves the ID of a specified directory from Iagon storage."
+    args_schema: Type[BaseModel] = GetDirectoryIdInput
+
+    def _run(self, directory_name: str, visibility: str = "private") -> str:
+        headers = {"x-api-key": IAGON_API_KEY}
+        params = {
+            "visibility": visibility,
+            "listingType": "index"
+        }
+
+        response = requests.get(f"{BASE_URL}/directory", headers=headers, params=params)
+        
+        if response.status_code == 200:
+            directories = response.json().get("data", {}).get("directories", [])
+            for directory in directories:
+                if directory.get("directory_name") == directory_name:
+                    return directory["_id"]
+        return f"Directory '{directory_name}' not found or error occurred."
