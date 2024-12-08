@@ -6,16 +6,14 @@ These tools are designed to interact with the Iagon storage service, providing f
 ## Installation
 To incorporate this tool into your project, follow the installation instructions below:
 ```shell
-pip install 'crewai[tools]'
+# Clone the repository into your CrewAI project's tools directory
+git clone https://github.com/sebkuepers/iagon_crewai_tool.git your_project/tools/
 ```
 
 ## Example
 The following example demonstrates how to initialize the tool and execute a search with a given query:
 
 ```python
-# Clone the repository into your CrewAI project's tools directory
-git clone https://github.com/sebkuepers/iagon_crewai_tool.git your_project/tools/
-
 # Import the tools from your project structure
 from your_project.tools.iagon_tool import IAGONUploadFileTool
 
